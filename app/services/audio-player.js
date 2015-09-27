@@ -1,0 +1,1 @@
+export { default } from 'ccm-core/services/audio-player';
