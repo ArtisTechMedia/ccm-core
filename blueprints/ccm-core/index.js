@@ -1,5 +1,5 @@
 module.exports = {
-  description: 'ccm-core dependency injections'
+  description: 'ccm-core dependency injections',
 
   normalizeEntityName: function() {},
   
