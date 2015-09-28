@@ -1,1 +1,0 @@
-export { default } from 'ccm-core/components/modal-commmon';
