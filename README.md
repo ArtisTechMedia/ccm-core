@@ -1,25 +1,18 @@
-# Ccm-core
+# ccm-core
 
-This README outlines the details of collaborating on this Ember addon.
+Ember addon used to share components, services, etc. for AT/ccMixter sites.
 
-## Installation
+This addon will install itself when you install one of those sites.
+
+## Development
+
 
 * `git clone` this repository
 * `npm install`
 * `bower install`
+* `npm link`
+* in the project directory of the site site: `npm link ccm-core`
 
-## Running
+With this last step, any changes you make in the ccm-core tree will be reflected in the site's project dir.
 
-* `ember server`
-* Visit your app at http://localhost:4200.
 
-## Running Tests
-
-* `ember test`
-* `ember test --server`
-
-## Building
-
-* `ember build`
-
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
