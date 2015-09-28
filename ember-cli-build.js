@@ -6,22 +6,23 @@ module.exports = function(defaults) {
     // Add options here
   });
 
-     /** soundManager **/
+   /** soundManager **/
+
+  app.import({
+          development: 'bower_components/soundmanager/swf/soundmanager2_debug.swf',
+          production: 'bower_components/soundmanager/swf/soundmanager2.swf'
+      });
+  app.import({
+          development: 'bower_components/soundmanager/script/soundmanager2.js',
+          production: 'bower_components/soundmanager/script/soundmanager2-nodebug-jsmin.js'
+      });
+  app.import('bower_components/ember-cli-soundmanager-shim/soundmanager2-shim.js', {
+          exports: {
+            soundManager: ['default']
+          }
+      });
+
+  app.import('bower_components/ccm-audio-player-ui/audio-player.css');
   
-    app.import({
-            development: 'bower_components/soundmanager/swf/soundmanager2_debug.swf',
-            production: 'bower_components/soundmanager/swf/soundmanager2.swf'
-        });
-    app.import({
-            development: 'bower_components/soundmanager/script/soundmanager2.js',
-            production: 'bower_components/soundmanager/script/soundmanager2-nodebug-jsmin.js'
-        });
-    app.import('bower_components/ember-cli-soundmanager-shim/soundmanager2-shim.js', {
-            exports: {
-              soundManager: ['default']
-            }
-        });
-
-
   return app.toTree();
 };

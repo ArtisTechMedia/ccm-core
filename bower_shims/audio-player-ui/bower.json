@@ -1,0 +1,24 @@
+{
+  "name": "audio-player-ui",
+  "version": "0.0.1",
+  "authors": [
+    "Victor Stone <victor.stone@gmail.com>"
+  ],
+  "description": "css doodad for ccm audio player",
+  "main": "./audio-player.css",
+  "keywords": [
+    "ccmixter",
+    "audio",
+    "interface"
+  ],
+  "license": "MIT",
+  "homepage": "http://ccmxiter.org",
+  "ignore": [
+    "*.zip",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
