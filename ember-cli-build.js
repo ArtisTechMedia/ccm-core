@@ -6,5 +6,8 @@ module.exports = function(defaults) {
     // Add options here
   });
 
+  // this files is only for the dummy test app and has nothing to
+  // do with the add-on or the hosting/target app
+  
   return app.toTree();
 };

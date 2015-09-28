@@ -4,6 +4,16 @@
 module.exports = {
   name: 'ccm-core',
   
+  //
+  // this hooked is called as part of the host build
+  // process injecting functionality into the host's
+  // ember-cli-build.js
+  //
+  // the bower components referenced here were added 
+  // to the host's bower configuration (virtual bower.json)
+  // by the ./blueprints/ccm-core/index.js module 
+  // during the install of this addon
+  //
   included: function(app) {
     this._super.included(app);
 
