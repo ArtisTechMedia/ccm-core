@@ -22,5 +22,8 @@ module.exports = {
               soundManager: ['default']
             }
         });
+
+    app.import( bd + '/ccm-audio-player-ui/audio-player.css');
+
   }
 };
