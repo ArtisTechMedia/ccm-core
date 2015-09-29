@@ -16,8 +16,8 @@ module.exports = {
   afterInstall: function(options) {
     var packages = [
     	{ 
-    		name: 'ccm-audio-player-ui',
-    		target: 'https://raw.github.com/ArtisTechMedia/ccm-core/master/ccm-audio-player-ui-0.0.1.zip'
+    		name: 'ember-cli-ccm-shims',
+    		target: 'ArtisTechMedia/ember-cli-ccm-shims.git#master'
     	},
     	{
         	name: 'ember-cli-soundmanager-shim',

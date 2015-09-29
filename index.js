@@ -33,7 +33,7 @@ module.exports = {
             }
         });
 
-    app.import( bd + '/ccm-audio-player-ui/audio-player.css');
+    app.import( bd + '/ember-cli-ccm-shims/audio-player.css');
 
   }
 };
