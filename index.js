@@ -1,5 +1,6 @@
 /* jshint node: true */
 'use strict';
+//var Funnel = require('broccoli-funnel');
 
 /*
   Yea, so about this...
@@ -17,6 +18,7 @@
 var fs = require('fs');
 
 var sm2WrapHead = 
+  "\n// this wrapper was added during the ccm-core build injection\n\n" +
   "(function (window,_undefined) {\n\n" +
 
   "  if( typeof FastBoot !== 'undefined')\n" +
@@ -56,24 +58,24 @@ module.exports = {
     var bd = app.bowerDirectory;
     
     app.import({
-            development: bd + '/soundmanager/swf/soundmanager2_debug.swf',
-            production: bd + '/soundmanager/swf/soundmanager2.swf'
-        });
+        development: bd + '/soundmanager/swf/soundmanager2_debug.swf',
+        production: bd + '/soundmanager/swf/soundmanager2.swf'
+      });
     app.import({
-            development: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2.js'),
-            production: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2-nodebug-jsmin.js'),
-        });
+        development: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2.js'),
+        production: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2-nodebug-jsmin.js'),
+      });
     app.import( bd + '/ember-cli-soundmanager-shim/soundmanager2-shim.js', {
-            exports: {
-              soundManager: ['default']
-            }
-        });
-
-  //
-  // see ccm-core/blueprints/ccm-core/index.js for why this 
-  // doesn't work here
-  //
-  //  app.import( bd + '/ember-cli-ccm-shims/audio-player.css');
+        exports: {
+          soundManager: ['default']
+        }
+      });
+    /*
+    var fontAwesomeFonts = new Funnel( bd + '/font-awesome/fonts', {
+        destDir: 'fonts'
+      });
+    */
+    app.import( app.vendorDirectory + '/bower_components_ccm_audio-player.css');
 
   }
 };

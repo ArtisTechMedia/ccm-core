@@ -3,13 +3,13 @@
     <article class="clear-both audio-player {{if nowPlaying.isPlaying 'is-playing'}}">
       <div class='btn-group pull-left'>
           <a href='#' {{action 'playPrevious'}} class="btn play-previous {{unless audioPlayer.hasPrev 'disabled'}}" >
-            <span class="glyphicon glyphicon-backward"></span>
+            <i class="fa fa-backward"></i>
           </a>
           <a href='#' class='btn play' {{action 'togglePause'}}>
-            <span class="glyphicon {{if nowPlaying.isPaused 'glyphicon-play' 'glyphicon-pause'}}"></span>
+            <i class="fa fa-{{if nowPlaying.isPaused 'play' 'pause'}}"></i>
           </a>
           <a href='#' {{action 'playNext'}} class="btn play-next {{unless audioPlayer.hasNext 'disabled'}}">
-            <span class="glyphicon glyphicon-forward"></span>
+            <i class="fa fa-forward"></i>
           </a>
       </div>
       <div class='media-body'>
