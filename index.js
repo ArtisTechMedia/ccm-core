@@ -1,6 +1,42 @@
 /* jshint node: true */
 'use strict';
 
+/*
+  Yea, so about this...
+
+  The SoundManager js file throws an exception right at the start
+  if window.document isn't defined.
+
+  For the FastBoot case we just need the definition so the page
+  will generate on the server. 
+
+  So we suck in the file, wrap it in the code below and feed
+  that to the rest of the build process.
+
+*/
+var fs = require('fs');
+
+var sm2WrapHead = 
+  "(function (window,_undefined) {\n\n" +
+
+  "  if( typeof FastBoot !== 'undefined')\n" +
+  "  {\n" +
+  "    window.SoundManager = {};\n" +
+  "    window.soundManager = {};\n" +
+  "    return;\n" +
+  "  }\n\n";
+
+var sm2WrapFoot = "\n\n}(window));\n";
+
+function fastBootSafeSM2(path)
+{
+  var contents = fs.readFileSync(path);
+  contents = sm2WrapHead + contents + sm2WrapFoot;
+  path = 'vendor/' + path.replace(/\//g,'_');
+  fs.writeFileSync(path,contents);
+  return path;
+}
+
 module.exports = {
   name: 'ccm-core',
   
@@ -24,8 +60,8 @@ module.exports = {
             production: bd + '/soundmanager/swf/soundmanager2.swf'
         });
     app.import({
-            development: bd + '/soundmanager/script/soundmanager2.js',
-            production: bd + '/soundmanager/script/soundmanager2-nodebug-jsmin.js'
+            development: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2.js'),
+            production: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2-nodebug-jsmin.js'),
         });
     app.import( bd + '/ember-cli-soundmanager-shim/soundmanager2-shim.js', {
             exports: {

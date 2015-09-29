@@ -24,7 +24,7 @@ module.exports = {
     		   bower install --save git://github.com/ArtisTechMedia/ember-cli-ccm-shims.git#master
 
     		For ccMixter projects, this will already be part
-    		of the bower.json of the hosting app:
+    		of the bower.json of the hosting app.
 
     	{ 
     		name: 'ember-cli-ccm-shims',
