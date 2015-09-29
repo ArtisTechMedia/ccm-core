@@ -1,5 +1,5 @@
 {
-  "name": "ccm-core",
+  "name": "ember-cli-ccm-core",
   "version": "0.0.1",
   "description": "Core services for ccMixter and associated websites",
   "directories": {
