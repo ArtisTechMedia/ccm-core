@@ -33,7 +33,11 @@ module.exports = {
             }
         });
 
-    app.import( bd + '/ember-cli-ccm-shims/audio-player.css');
+  //
+  // see ccm-core/blueprints/ccm-core/index.js for why this 
+  // doesn't work here
+  //
+  //  app.import( bd + '/ember-cli-ccm-shims/audio-player.css');
 
   }
 };

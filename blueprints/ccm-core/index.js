@@ -15,10 +15,22 @@ module.exports = {
   //
   afterInstall: function(options) {
     var packages = [
+    	/*
+
+    		OK - this format seemed to be officially busted.
+    		For now: the hosting app has to manually install 
+    		the bower thingy from the command line:
+
+    		   bower install --save git://github.com/ArtisTechMedia/ember-cli-ccm-shims.git#master
+
+    		For ccMixter projects, this will already be part
+    		of the bower.json of the hosting app:
+
     	{ 
     		name: 'ember-cli-ccm-shims',
     		target: 'git://github.com/ArtisTechMedia/ember-cli-ccm-shims.git#master'
     	},
+    	*/
     	{
         	name: 'ember-cli-soundmanager-shim',
         	target: '~0.0.1'
