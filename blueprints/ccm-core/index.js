@@ -17,7 +17,7 @@ module.exports = {
     var packages = [
     	{ 
     		name: 'ember-cli-ccm-shims',
-    		target: 'ArtisTechMedia/ember-cli-ccm-shims.git#master'
+    		target: 'https://git.com/ArtisTechMedia/ember-cli-ccm-shims.git#master'
     	},
     	{
         	name: 'ember-cli-soundmanager-shim',
