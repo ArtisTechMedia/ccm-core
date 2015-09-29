@@ -75,7 +75,7 @@ module.exports = {
         destDir: 'fonts'
       });
     */
-    app.import( app.vendorDirectory + '/bower_components_ccm_audio-player.css');
+    app.import( 'app/styles/audio-player.css' );
 
   }
 };
