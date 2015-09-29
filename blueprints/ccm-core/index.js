@@ -13,29 +13,30 @@ module.exports = {
   // project which is the entry point
   // during a build of the hosting app
   //
+  // N.B. I'm not sure about this but I 
+  // think you MUST run:
+  //
+  //    ember install ember-cli-ccm-core
+  //
+  // to have this blueprint run even if
+  // it referred to in the packages.json
+  // of the hosting app
+  //
   afterInstall: function(options) {
     var packages = [
-    	/*
-
-    		OK - this format seemed to be officially busted.
-    		For now: the hosting app has to manually install 
-    		the bower thingy from the command line:
-
-    		   bower install --save git://github.com/ArtisTechMedia/ember-cli-ccm-shims.git#master
-
-    		For ccMixter projects, this will already be part
-    		of the bower.json of the hosting app.
-
-    	{ 
-    		name: 'ember-cli-ccm-shims',
-    		target: 'git://github.com/ArtisTechMedia/ember-cli-ccm-shims.git#master'
-    	},
-    	*/
+      {
+          name: 'bootstrap',
+          target: '~3.3.5'
+      },
+      {
+        name: 'font-awesome',
+        target: '~4.4.0'
+      },
     	{
         	name: 'ember-cli-soundmanager-shim',
         	target: '~0.0.1'
-        }
-      ];
+      }
+    ];
     return this.addBowerPackagesToProject( packages );
   }  
 };

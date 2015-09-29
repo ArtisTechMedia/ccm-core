@@ -1,6 +1,6 @@
 /* jshint node: true */
 'use strict';
-//var Funnel = require('broccoli-funnel');
+
 
 /*
   Yea, so about this...
@@ -10,6 +10,12 @@
 
   For the FastBoot case we just need the definition so the page
   will generate on the server. 
+
+  Bootstrap.js does a bunch of DOM-y stuff which
+  chokes in FastBoot mode.
+
+  For the FastBoot case we just need the page to
+  generate statically on the server.
 
   So we suck in the file, wrap it in the code below and feed
   that to the rest of the build process.
@@ -39,9 +45,25 @@ function fastBootSafeSM2(path)
   return path;
 }
 
+var bsWrapHead = "if( typeof FastBoot === 'undefined' ) \n { \n\n";
+var bsWrapFoot = "\n\n}\n";
+
+function fastBootSafeBS(path)
+{
+  var contents = fs.readFileSync(path);
+  contents = bsWrapHead + contents + bsWrapFoot;
+  path = 'vendor/' + path.replace(/\//g,'_');
+  fs.writeFileSync(path,contents);
+  return path;
+}
+
 module.exports = {
   name: 'ccm-core',
   
+  treeForVendor: function() {
+    var np = this.project.nodeModulesPath;
+    return np + '/ember-cli-ccm-core/vendor';
+  },
   //
   // this hooked is called as part of the host build
   // process injecting functionality into the host's
@@ -57,6 +79,8 @@ module.exports = {
 
     var bd = app.bowerDirectory;
     
+    /** sound manager **/
+
     app.import({
         development: bd + '/soundmanager/swf/soundmanager2_debug.swf',
         production: bd + '/soundmanager/swf/soundmanager2.swf'
@@ -70,12 +94,37 @@ module.exports = {
           soundManager: ['default']
         }
       });
-    /*
-    var fontAwesomeFonts = new Funnel( bd + '/font-awesome/fonts', {
-        destDir: 'fonts'
-      });
-    */
-    app.import( 'app/styles/audio-player.css' );
+
+    /** bootstrap **/
+    
+    app.import(bd + '/bootstrap/dist/css/bootstrap.css');
+    app.import(bd + '/bootstrap/dist/css/bootstrap-theme.css');
+    app.import({
+      development: fastBootSafeBS(bd + '/bootstrap/dist/js/bootstrap.js'),
+      production: fastBootSafeBS(bd + '/bootstrap/dist/js/bootstrap.min.js'),
+    });
+
+    /** font awesome **/
+
+    app.import({
+      development: bd + '/font-awesome/css/font-awesome.css',
+      production: bd + '/font-awesome/css/font-awesome.min.css'
+    });
+
+    var fonts = [
+      "fontawesome-webfont.eot",
+      "fontawesome-webfont.svg",
+      "fontawesome-webfont.ttf",
+      "fontawesome-webfont.woff",
+      "fontawesome-webfont.woff2",
+      "FontAwesome.otf"
+    ];
+    
+    for (var i = fonts.length - 1; i >= 0; i--) {
+      app.import( bd + '/font-awesome/fonts' + fonts[i] );
+    };
+    
+    app.import( 'vendor/styles/audio-player.css' );
 
   }
 };
