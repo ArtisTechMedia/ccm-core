@@ -119,7 +119,7 @@ module.exports = {
       "fontawesome-webfont.woff2",
       "FontAwesome.otf"
     ];
-    
+
     for (var i = fonts.length - 1; i >= 0; i--) {
       app.import( bd + '/font-awesome/fonts' + fonts[i] );
     };
