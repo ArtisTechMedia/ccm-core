@@ -84,6 +84,9 @@ module.exports = {
     app.import({
         development: bd + '/soundmanager/swf/soundmanager2_debug.swf',
         production: bd + '/soundmanager/swf/soundmanager2.swf'
+      },
+      {
+        destDir: '/swf'
       });
     app.import({
         development: fastBootSafeSM2(bd + '/soundmanager/script/soundmanager2.js'),
@@ -101,14 +104,14 @@ module.exports = {
     app.import(bd + '/bootstrap/dist/css/bootstrap-theme.css');
     app.import({
       development: fastBootSafeBS(bd + '/bootstrap/dist/js/bootstrap.js'),
-      production: fastBootSafeBS(bd + '/bootstrap/dist/js/bootstrap.min.js'),
+      production:  fastBootSafeBS(bd + '/bootstrap/dist/js/bootstrap.min.js'),
     });
 
     /** font awesome **/
 
     app.import({
       development: bd + '/font-awesome/css/font-awesome.css',
-      production: bd + '/font-awesome/css/font-awesome.min.css'
+      production:  bd + '/font-awesome/css/font-awesome.min.css'
     });
 
     var fonts = [
@@ -121,7 +124,11 @@ module.exports = {
     ];
 
     for (var i = fonts.length - 1; i >= 0; i--) {
-      app.import( bd + '/font-awesome/fonts' + fonts[i] );
+      app.import( bd + '/font-awesome/fonts/' + fonts[i], {
+        destDir: '/fonts',
+        type:    'vendor',
+        prepend:  false
+      });
     };
     
     app.import( 'vendor/styles/audio-player.css' );
