@@ -50,11 +50,13 @@ var File = Model.extend({
   idBinding:       'file_id',
   sizeBinding:     'file_filesize',
   typeBinding:     'file_extra.type',
+  uploadBinding:   '_bindParent',
 
   nicName: function() {
     if( this.get('file_nicname') !== this.get('extension') ) {
       return this.get('file_nicname');
     }
+    return this.get('file_extra.type');
   }.property('file_nicname'),
 
   tags: function() {
@@ -71,14 +73,6 @@ var File = Model.extend({
     return false;
   },
 
-  isAudio: function() {
-    var ffi = this.get('file_format_info');
-    if( ffi && 'mime_type' in ffi ) {
-      return ffi['mime_type'].match(/^audio\//);
-    }
-    return false;
-  }.property('file_format_info'),
-
   isMP3: function() {
     var ffi = this.get('file_format_info');
     if( ffi && 'format-name' in ffi ) {
@@ -91,6 +85,33 @@ var File = Model.extend({
     return this.get('local_path').replace(/.*\.([a-z0-9]+)$/,'$1');
   }.property('file_name'),
   
+  wavImageURL: function() {
+    var baseURL = 'http://ccmixter.org/waveimage/'; // um, hello ENV?
+    return baseURL + this.file_upload + '/' + this.file_id;
+  }.property(),
+
+  /* required by audio player */
+  mediaURL: function() {
+    return this.download_url;
+  }.property('files'),
+  
+  mediaTags: function() {
+
+    /* required by audio player */
+    var id          = this.get('upload.id');
+    var name        = this.get('upload.name');
+
+    var fileID      = this.file_id;
+    var wavImageURL = this.get('wavImageURL');
+    var artist      = {
+                   name: this.get('upload.artist.name'),
+                   id: this.get('upload.artist.id'),
+                 };
+
+    return { name, id, fileID, artist, wavImageURL };
+
+  }.property('upload'),
+
 });
 
 var UploadUserBasic = Model.extend( {
@@ -157,47 +178,27 @@ var Upload = UploadBasic.extend({
   }.property('upload_extra.bpm'),
 
   fileInfo: function() {
-    return this.get('files').findBy('isAudio');
+    return this.get('files').findBy('isMP3');
   }.property('files'),
 
   wavImageURL: function() {
-    var fi = this.get('fileInfo');
-    if( fi ) {
-      var baseURL = 'http://ccmixter.org/waveimage/'; // um, hello ENV?
-      return baseURL + this.get('id') + '/' + fi.get('id');
-    }
-    return null;
+    return this.get('fileInfo.wavImageURL');
   }.property('fileInfo'),
 
   /* required by audio player */
   mediaURL: function() {
-    return this.get('fileInfo.download_url') || this.get('fplay_url') || this.get('download_url');
+    return this.get('fileInfo.mediaURL') || this.get('fplay_url') || this.get('download_url');
   }.property('files'),
   
   mediaTags: function() {
-
-    /* required by audio player */
-    var id          = this.get('id');
-    var name        = this.get('name');
-
-    /* app wants this stuff */
-    var fi          = this.get('fileInfo');
-    var fileID      = fi.file_id || 0;
-    var wavImageURL = this.get('wavImageURL');
-    var artist      = {
-                   name: this.get('artist.name'),
-                   id: this.get('artist.id'),
-                 };
-
-    return { name, id, fileID, artist, wavImageURL };
-
-  }.property('fileInfo', 'artist'),
-
+    return this.get('fileInfo.mediaTags');
+  }.property('fileInfo.mediaTags'),
+    
 });
 
 var ACappellaFile = File.extend({
   isPlayablePell: function() {
-    return this.get('isAudio') && this.hasTag('acappella');
+    return this.get('isMP3') && this.hasTag('acappella');
   }.property('file_format_info'),
 
 });
@@ -210,11 +211,8 @@ var ACappella = Upload.extend( {
   },
 
   fileInfo: function() {
-    var pellFile = this.get('files').findBy('isPlayablePell');
-    if( !pellFile ) {
-      return this.get('files').findBy('isAudio');
-    }
-    return pellFile;
+    return this.get('files').findBy('isPlayablePell') ||
+           this.get('files').findBy('isMP3');
   }.property('files'),
 
 });
