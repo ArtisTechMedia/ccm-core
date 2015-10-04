@@ -15,6 +15,10 @@ export default Ember.Component.extend({
 
     playNext: function() {
       this.get('audioPlayer').playNext();
+    },
+
+    userAction: function(actionType,model) {
+      this.sendAction( 'userAction', actionType, model );
     }
   }
 });

@@ -43,28 +43,85 @@ import LicenseUtils from '../lib/licenses';
 var Model = Ember.Object.extend({
 });
 
+ 
+var File = Model.extend({
+
+  urlBinding:      'download_url',
+  idBinding:       'file_id',
+  sizeBinding:     'file_filesize',
+  typeBinding:     'file_extra.type',
+
+  nicName: function() {
+    if( this.get('file_nicname') !== this.get('extension') ) {
+      return this.get('file_nicname');
+    }
+  }.property('file_nicname'),
+
+  tags: function() {
+    if( 'ccud' in this.file_extra ) {
+      return TagUtils.create( { source: this.file_extra.ccud });
+    }
+    return '';
+  }.property('file_extra'),
+
+  hasTag: function(tag) {
+    var tags = this.get('tags');
+    if( tags )
+      return tags.contains(tag);
+    return false;
+  },
+
+  isAudio: function() {
+    var ffi = this.get('file_format_info');
+    if( ffi && 'mime_type' in ffi ) {
+      return ffi['mime_type'].match(/^audio\//);
+    }
+    return false;
+  }.property('file_format_info'),
+
+  isMP3: function() {
+    var ffi = this.get('file_format_info');
+    if( ffi && 'format-name' in ffi ) {
+      return ffi['format-name'] === 'audio-mp3-mp3'
+    }
+    return false;
+  }.property('file_format_info'),
+
+  extension: function() {
+    return this.get('local_path').replace(/.*\.([a-z0-9]+)$/,'$1');
+  }.property('file_name'),
+  
+});
+
+var UploadUserBasic = Model.extend( {
+  nameBinding: '_bindParent.user_real_name',
+});
+
 var UploadBasic = Model.extend( {
+
   nameBinding: 'upload_name',
   urlBinding:  'file_page_url',
-  idBinding: 'upload_id',
+  idBinding:   'upload_id',
   
-  _artistProperties: function() {
-    return {
-        upload: this,
-        name: 'upload.user_real_name',
-      };
+  _modelSubtree: {
+    artist: UploadUserBasic,
   },
-  
-  _setupArtist: function() {
-    this.set( 'artist', reBind( this._artistProperties() ) );
-  }.on('init'),
-  
+
 });
 
 var Remix  = UploadBasic.extend();
 var Source = UploadBasic.extend();
 
+var TrackbackUser = Model.extend({
+  nameBinding: '_bindParent.pool_item_artist',
+});
+
 var Trackback = Model.extend( {
+
+  _modelSubtree: {
+    artist: TrackbackUser,
+  },
+
   name: function() {
     var name = this.get('pool_item_name') + '';
     if( name.match(/^watch\?/) !== null ) {
@@ -73,56 +130,98 @@ var Trackback = Model.extend( {
     return name;
   }.property('pool_item_name'),
   
-  urlBinding: 'pool_item_url',
-  
+  urlBinding:   'pool_item_url',
   embedBinding: 'pool_item_extra.embed',
-  typeBinding: 'pool_item_extra.ttype',
+  typeBinding:  'pool_item_extra.ttype',
   
-  _setupArtist: function() {
-    this.set('artist', reBind({
-      trackback: this,
-      name: 'trackback.pool_item_artist'
-    }));
-  }.on('init'),
 });
 
-export var Upload = UploadBasic.extend({
+var UploadUser = UploadUserBasic.extend({
+  idBinding: '_bindParent.user_name',
+});
+
+var Upload = UploadBasic.extend({
+
+  _modelSubtree: {
+    files: File,
+    artist: UploadUser,
+  },
 
   idBinding: 'upload_id',
+  
+  bpm: function() {
+    var bpm = this.get('upload_extra.bpm');
+    if(  (bpm + "").match(/[^0-9]/) === null ) {
+      return bpm;
+    }
+  }.property('upload_extra.bpm'),
 
   fileInfo: function() {
-    var files = this.get('files');
-    for( var i = 0; i < files.length; i++ ) {
-      if( files[i].file_format_info['media-type'] === "audio" ) {
-        return files[i];
-      }
-    }
+    return this.get('files').findBy('isAudio');
   }.property('files'),
 
+  wavImageURL: function() {
+    var fi = this.get('fileInfo');
+    if( fi ) {
+      var baseURL = 'http://ccmixter.org/waveimage/'; // um, hello ENV?
+      return baseURL + this.get('id') + '/' + fi.get('id');
+    }
+    return null;
+  }.property('fileInfo'),
+
+  /* required by audio player */
   mediaURL: function() {
-    return this.get('fplay_url') || this.get('download_url') || this.get('fileInfo.download_url');
+    return this.get('fileInfo.download_url') || this.get('fplay_url') || this.get('download_url');
   }.property('files'),
   
   mediaTags: function() {
-    return {
-      name: this.get('name'),
-      id: this.get('id'),
-      artist: {
-          name: this.get('artist.name'),
-          id: this.get('artist.id'),
-        },
-    };
-  }.property('files'),
-  
-  _artistProperties: function() {
-    return Ember.merge( this._super(), { id: 'upload.user_name' } );
+
+    /* required by audio player */
+    var id          = this.get('id');
+    var name        = this.get('name');
+
+    /* app wants this stuff */
+    var fi          = this.get('fileInfo');
+    var fileID      = fi.file_id || 0;
+    var wavImageURL = this.get('wavImageURL');
+    var artist      = {
+                   name: this.get('artist.name'),
+                   id: this.get('artist.id'),
+                 };
+
+    return { name, id, fileID, artist, wavImageURL };
+
+  }.property('fileInfo', 'artist'),
+
+});
+
+var ACappellaFile = File.extend({
+  isPlayablePell: function() {
+    return this.get('isAudio') && this.hasTag('acappella');
+  }.property('file_format_info'),
+
+});
+
+var ACappella = Upload.extend( {
+
+  _modelSubtree: {
+    files: ACappellaFile,
+    artist: UploadUser,
   },
-  
+
+  fileInfo: function() {
+    var pellFile = this.get('files').findBy('isPlayablePell');
+    if( !pellFile ) {
+      return this.get('files').findBy('isAudio');
+    }
+    return pellFile;
+  }.property('files'),
+
 });
 
 var UserBasic = Model.extend( {
   nameBinding: 'user_real_name',
-  idBinding: 'user_name',
+  idBinding:   'user_name',
 });
 
 var User = UserBasic.extend( {
@@ -140,7 +239,16 @@ var User = UserBasic.extend( {
   }.property('user_homepage','artist_page_url'),
 });
 
+var DetailUser = UploadUser.extend( {
+  avatarURLBinding: '_bindParent.user_avatar_url',
+});
+
 var Detail = Upload.extend( {
+
+  _modelSubtree: {
+    files: File,
+    artist: DetailUser,
+  },
 
   tags: function() {
     return TagUtils.create( { source: this.get('upload_tags') } );
@@ -204,57 +312,62 @@ var Detail = Upload.extend( {
     }
   }.property('isCCPlus'),
   
-  _artistProperties: function() {
-    return Ember.merge( this._super(), { avatarURL: 'upload.user_avatar_url' } );
-  },
 });
 
 var Tag = Model.extend( {
-  idBinding: 'tags_tag',
-  nameBinding: 'tags_tag',
+  idBinding:    'tags_tag',
+  nameBinding:  'tags_tag',
   countBinding: 'tags_count'
 });
 
 var Topic = Model.extend({
   publishedBinding: 'topic_date',
-  idBinding: 'topic_id',
-  nameBinding: 'topic_name',
-  rawBinding: 'topic_text',
-  htmlBinding: 'topic_text_html',
-  textBinding: 'topic_text_plain',
+  idBinding:        'topic_id',
+  nameBinding:      'topic_name',
+  rawBinding:       'topic_text',
+  htmlBinding:      'topic_text_html',
+  textBinding:      'topic_text_plain',
 });
 
-function reBind(props)
-{
-  var model = Model.create();
-  for( var k in props ) {
-    if( typeof props[k] === 'string' ) {
-      model.set(k, Ember.computed.alias(props[k]));
-    } else {
-      model.set(k,props[k]);
-    }
+
+function _bindToParent(parent,prop) {
+  if( Ember.isArray(prop) ) {
+    prop.forEach( o => _bindToParent(parent,o) );
   }
-  return model;
+  prop.set('_bindParent',parent);
 }
 
+function _serialize(initValues,model) {
 
-function _serialize(param,model) {
-  if( Ember.isArray(param) ) {
-    return param.map( o => model.create(o) );
+  if( Ember.isArray(initValues) ) {
+    return initValues.map( o => _serialize(o,model) );
   }
-  return model.create(param);
+
+  var obj = model.create(initValues);
+
+  var subTreeModels = model.proto()._modelSubtree || null;
+  if( subTreeModels ) {
+    for( var propName in subTreeModels ) {
+      var value = _serialize( initValues[propName] || {}, subTreeModels[propName] );
+      obj.set( propName, value );
+      _bindToParent( obj, value );
+    }
+  }
+
+  return obj;
 }
 
 var models = {
-  remix: Remix,
+  remix:     Remix,
   trackback: Trackback,
-  detail: Detail,
-  upload: Upload,
-  user: User,
-  tag: Tag,
+  detail:    Detail,
+  upload:    Upload,
+  user:      User,
+  tag:       Tag,
   userBasic: UserBasic,
-  source: Source,
-  topic: Topic
+  source:    Source,
+  topic:     Topic,
+  pell:      ACappella,
 };
 
 /**

@@ -55,8 +55,7 @@ export default Ember.Object.extend( {
         url: url,
         method: 'GET',
         dataType: 'json',
-        error: jqueryError,
-        
+        error: jqueryError,        
       };      
     
     var ajax = this.get('ajax');

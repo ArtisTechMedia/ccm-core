@@ -1,5 +1,5 @@
 {
-  "name": "ember-cli-ccm-core",
+  "name": "ccm-core",
   "version": "0.0.1",
   "description": "Core services for ccMixter and associated websites",
   "directories": {
@@ -11,12 +11,12 @@
     "build": "ember build",
     "test": "ember try:testall"
   },
-  "repository": "",
+  "repository": "https://github.com/ArtisTechMedia/ember-cli-ccm-core.git#master",
   "engines": {
     "node": ">= 0.10.0"
   },
   "author": "Victor Stone, Alex Goodwin",
-  "license": "GPL",
+  "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.2",
     "ember-cli": "1.13.1",
