@@ -62,7 +62,7 @@ module.exports = {
   
   treeForVendor: function() {
     var np = this.project.nodeModulesPath;
-    return np + '/ember-cli-ccm-core/vendor';
+    return np + '/ccm-core/vendor';
   },
   //
   // this hooked is called as part of the host build
