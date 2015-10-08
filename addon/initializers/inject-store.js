@@ -5,7 +5,7 @@ import Topics from '../models/topics';
 
 export default {
     name: 'inject-store',
-    initialize: function(container, app) {
+    initialize: function(app) {
         var STORE_MAIN = 'store:main';
         app.register(STORE_MAIN, Query);
         app.inject('route','store', STORE_MAIN);

@@ -5,9 +5,14 @@ export default Ember.Component.extend({
   layout: layout,
   classNames: [ 'paging-container'],
   
+  _isValidOffset: function() {
+    var offset = Number(this.get('offset'));
+    return !(offset > this.get('total'));
+  },
+
   shouldShow: function() {
     var show = this.get('showPrev') || this.get('showNext');
-    return show;
+    return show && this._isValidOffset();
   }.property('showPrev','showNext'),
   
   printableOffset: function() {
