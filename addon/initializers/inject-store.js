@@ -6,7 +6,7 @@ import Topics from '../models/topics';
 export default {
     name: 'inject-store',
     initialize: function(app) {
-        var STORE_MAIN = 'store:main';
+        var STORE_MAIN = 'service:store';
         app.register(STORE_MAIN, Query);
         app.inject('route','store', STORE_MAIN);
         app.inject('controller','store', STORE_MAIN);
