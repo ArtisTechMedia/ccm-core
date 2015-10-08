@@ -9,7 +9,7 @@ export default {
 
     app.register( TAGS_SERVICE, Tags );
 
-    registry.inject('controller', 'tags', TAGS_SERVICE);    
-    registry.inject('route',      'tags', TAGS_SERVICE);
+    app.inject('controller', 'tags', TAGS_SERVICE);    
+    app.inject('route',      'tags', TAGS_SERVICE);
   }
 };
